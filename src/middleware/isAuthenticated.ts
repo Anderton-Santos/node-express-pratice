@@ -1,17 +1,18 @@
 import { Request, Response, NextFunction } from "express";
 import  Jwt  from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET!;
+const JWT_SECRET = process.env.JWT_SECRET!
 
-export const authMiddleware = (req: Request, res:Response, next:NextFunction) => {
+export const authMiddleware = (req:Request, res:Response, next:NextFunction) => {
     const authHeader = req.headers.authorization;
 
     if(!authHeader){
-        return res.status(401).json({error: "token não encontrado"})
+        return res.status(401).json({error: "Token não encontrado"})
     }
 
-    const [schema, token] = authHeader.split("");
+    const [schema, token] = authHeader.split("")
 
+    
     if(schema !== "Bearer" || !token){
         return res.status(401).json({error: "Formato inválido do token"})
     }

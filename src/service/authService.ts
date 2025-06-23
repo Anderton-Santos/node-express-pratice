@@ -1,22 +1,27 @@
-import  Jwt  from "jsonwebtoken";
-
+import jwt from 'jsonwebtoken'
+import bcrypt from 'bcryptjs'
+import prisma from '../prisma';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-const mockUser = {
-    id: '123',
-    email: 'teste@teste.com',
-    password: '123123',
-}
+export const authenticateUser = async (email: string, password:string) =>{
 
-export const authenticateUser = (email: string, password:string) =>{
+   const user = await prisma.user.findUnique({
+    where:{email}
+   })
 
-    if(email !== mockUser.email || password !== mockUser.password){
-        return null
-    }
+   if(!user){
+    throw new Error('Usuario encontrado')
+   }
 
-    const token = Jwt.sign(
-        {id: mockUser.id, email:mockUser.email},
+   const isPasswordValid = await bcrypt.compare(password, user.password);
+   if(!isPasswordValid) {
+    throw new Error('Senha incorreta')
+   }
+
+
+    const token = jwt.sign(
+        {id: user.id, email:user.email},
         JWT_SECRET,
         {expiresIn: "1h"}
     )
